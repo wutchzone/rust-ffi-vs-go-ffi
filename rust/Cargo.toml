@@ -1,0 +1,12 @@
+[package]
+name = "rust"
+version = "0.1.0"
+authors = ["Daniel Sedlak <daniel@sedlak.biz>"]
+edition = "2018"
+
+[dependencies]
+libc = "*"
+
+[build-dependencies]
+cc = "*"
+
