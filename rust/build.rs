@@ -1,7 +1,7 @@
 extern crate cc;
 
 fn main() {
-    cc::Build::new().file("vertigo.c").compile("rust_vertigo");
+    cc::Build::new().file("test.c").compile("test");
 
     println!("cargo:rustc-link-lib=avformat");
     println!("cargo:rustc-link-lib=avutil");

@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-Wall -pedantic -g3
+CFLAGS=-Wall -pedantic -g3 -O3
 LIBS=-lavformat -lavutil -lavcodec
 OBJS=test.o
 

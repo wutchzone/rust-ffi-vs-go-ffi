@@ -30,8 +30,8 @@ int run() {
   AVIOContext *input_context =
       avio_alloc_context(input_buffer, 8192, 0, fi, read_func, NULL, NULL);
   // used for ouput file
-  AVIOContext *output_context =
-      avio_alloc_context(output_buffer, 2 * 8192, 1, fo, NULL, write_func, NULL);
+  AVIOContext *output_context = avio_alloc_context(output_buffer, 2 * 8192, 1,
+                                                   fo, NULL, write_func, NULL);
 
   int ret, i;
   AVFormatContext *f_context = avformat_alloc_context(),
@@ -135,7 +135,9 @@ int run() {
 }
 
 int main(int argc, char **argv) {
-  run();
+  for (int i = 0; i < 400; i++) {
+    run();
+  }
 
   return 0;
 }

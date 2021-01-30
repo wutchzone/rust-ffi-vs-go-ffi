@@ -7,7 +7,7 @@ import (
 
 /*
 #cgo LDFLAGS: -lavformat -lavutil -lavcodec
-#include "vertigo.h"
+#include "test.h"
 #include <stdlib.h>
 #include <string.h>
 */
@@ -48,13 +48,13 @@ func (s *Test) write(buf unsafe.Pointer, size int) int {
 func main() {
 	data := &Test{}
 	for i := 0; i < 400; i++ {
-		if f, err := os.Open(os.Args[1]); err != nil {
+		if f, err := os.Open("../test.flv"); err != nil {
 			panic(err)
 		} else {
 			file = f
 		}
 
-		outputFile, _ = os.Create("trololo.ts")
+		outputFile, _ = os.Create("test.ts")
 		C.go_transmuxer(unsafe.Pointer(&data))
         outputFile.Close()
         file.Close()
