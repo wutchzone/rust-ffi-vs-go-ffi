@@ -6,6 +6,6 @@
 typedef int (*read_callback)(void *, uint8_t *, int);
 typedef int (*write_callback)(void *, const uint8_t *, int);
 
-int rust_transmuxer(read_callback read, write_callback write);
+int rust_transmuxer(void *context, read_callback read, write_callback write);
 
 #endif

@@ -2,60 +2,68 @@ use std::{
     ffi::c_int,
     fs::File,
     io::{Read, Write},
-    sync::Mutex,
 };
 
 use co3::{ffi, raw};
 
-fn rust_read(_context: Option<&mut Ctx>, buffer: &mut [u8]) -> c_int {
-    let mut input = FILE.lock().unwrap();
-    input.as_mut().unwrap().read(buffer).expect("read file") as c_int
+struct Ctx {
+    input: File,
+    output: File,
 }
 
-fn rust_write(_context: Option<&mut Ctx>, buffer: &[u8]) -> c_int {
-    let mut output = FILE_OUTPUT.lock().unwrap();
-    output
-        .as_mut()
-        .unwrap()
-        .write_all(buffer)
-        .expect("write file");
-    buffer.len() as c_int
+ffi! {
+    #![unsafe(export("C"))]
+
+    type Ctx;
+}
+
+impl Ctx {
+    fn rust_read(&mut self, buffer: &mut [u8]) -> c_int {
+        self.input.read(buffer).expect("read file") as c_int
+    }
+
+    fn rust_write(&mut self, buffer: &[u8]) -> c_int {
+        self.output.write_all(buffer).expect("write file");
+        buffer.len() as c_int
+    }
 }
 
 raw! {
-    // Generates: `unsafe extern "C" fn rust_read_raw(*mut c_void, *mut u8, c_int) -> c_int`
-    // `rust_read_raw` decodes the `C` arguments into `Rust` types and calls `rust_read`.
-    fn rust_read(context: Option<&mut Ctx>, #[unpack(_, c_int)] buffer: &mut [u8]) -> c_int;
+    impl Ctx {
+        // Generates: `unsafe extern "C" fn rust_read_raw(*mut c_void, *mut u8, c_int) -> c_int`
+        // `Ctx::rust_read_raw` decodes the arguments as `Rust` types and calls `Ctx::rust_read`
+        fn rust_read(&mut self, #[unpack(_, c_int)] buffer: &mut [u8]) -> c_int;
 
-    // Generates `unsafe extern "C" fn rust_write_raw(*mut c_void, *const u8, c_int) -> c_int`
-    // `rust_write_raw` decodes the`C`arguments into `Rust` types and calls `rust_write`.
-    fn rust_write(context: Option<&mut Ctx>, #[unpack(_, c_int)] buffer: &[u8]) -> c_int;
+        // Generates `unsafe extern "C" fn rust_write_raw(*mut c_void, *const u8, c_int) -> c_int`
+        // `Ctx::rust_write_raw` decodes the arguments as `Rust` types and calls `Ctx::rust_write`
+        fn rust_write(&mut self, #[unpack(_, c_int)] buffer: &[u8]) -> c_int;
+    }
 }
 
 ffi! {
     #![unsafe(extern("C"))]
 
-    type Ctx;
-
     // `raw fn` is a function whose arguments are lowered into C types
-    type WriteCallback = raw fn(Option<&mut Ctx>, #[unpack(_, c_int)] &[u8]) -> c_int;
-    type ReadCallback = raw fn(Option<&mut Ctx>, #[unpack(_, c_int)] &mut [u8]) -> c_int;
+    type WriteCallback = raw fn(&mut Ctx, #[unpack(_, c_int)] &[u8]) -> c_int;
+    type ReadCallback = raw fn(&mut Ctx, #[unpack(_, c_int)] &mut [u8]) -> c_int;
 
-    #[symbol_name = "rust_transmuxer"]
-    // Generates `rust_transmuxer(read: ReadCallback, write: WriteCallback) -> c_int`
-    // wrapper that imports the C `rust_transmuxer` symbol with checked conversions.
-    //
-    // The wrapper is considered safe provided that signature was declared correctly
-    fn rust_transmuxer(read: ReadCallback, write: WriteCallback) -> c_int;
+    impl Ctx {
+        // Generates `Ctx::rust_transmuxer(read: ReadCallback, write: WriteCallback) -> c_int`
+        // wrapper that imports the C `rust_transmuxer` symbol with checked conversions.
+        //
+        // The wrapper is considered safe provided that signature was declared correctly
+        #[symbol_name = "rust_transmuxer"]
+        fn rust_transmuxer(&mut self, read: ReadCallback, write: WriteCallback) -> c_int;
+    }
 }
-
-static FILE: Mutex<Option<File>> = Mutex::new(None);
-static FILE_OUTPUT: Mutex<Option<File>> = Mutex::new(None);
 
 fn main() {
     for _ in 0..400 {
-        *FILE.lock().unwrap() = Some(File::open("../test.flv").unwrap());
-        *FILE_OUTPUT.lock().unwrap() = Some(File::create("test.ts").unwrap());
-        rust_transmuxer(rust_read_raw, rust_write_raw);
+        let mut context = Ctx {
+            input: File::open("../test.flv").unwrap(),
+            output: File::create("test.ts").unwrap(),
+        };
+
+        context.rust_transmuxer(Ctx::rust_read_raw, Ctx::rust_write_raw);
     }
 }
