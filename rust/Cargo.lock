@@ -14,9 +14,9 @@ dependencies = [
 
 [[package]]
 name = "co3"
-version = "0.5.1"
+version = "0.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5d65f413bb749cbd2a885db1681c1d08a527768ae40507561634c4eaec308942"
+checksum = "013405f8bc6e62cafc3b01df662ac3ffcc8f4e6d47b50a52e8e036be81f1310f"
 dependencies = [
  "co3-derive",
  "disjoint_impls",
@@ -26,9 +26,9 @@ dependencies = [
 
 [[package]]
 name = "co3-derive"
-version = "0.5.1"
+version = "0.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "da4110a5518abdf09663df838ee1ff46b907675526d6e6db528f39ba5ce12c03"
+checksum = "add4b51dfb54f8967cee4fa67b9fb0af28569b84490d1c3219c15e5b32db71dd"
 dependencies = [
  "manyhow",
  "proc-macro-crate",
@@ -39,9 +39,9 @@ dependencies = [
 
 [[package]]
 name = "disjoint_impls"
-version = "1.4.1"
+version = "1.4.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "32529fb9393fe76b32d03b3ea9110c93dd978d16fd80339b1168a7031bbf27fc"
+checksum = "eade90bf561195cc5da178fe2afc2d77e62e0799f31b3ba928b31e4e7cf8d4b7"
 dependencies = [
  "indexmap",
  "itertools",
@@ -177,9 +177,9 @@ dependencies = [
 
 [[package]]
 name = "rust-spec"
-version = "0.3.1"
+version = "0.5.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c65e279ca4d59a54c37a23be5f651b5210f1b6455322d13df8b4a433e0809aef"
+checksum = "a11548656541123be99314f4751fa7cda3d24a3c07806c04c8821704d489e14d"
 dependencies = [
  "disjoint_impls",
  "rust-spec-derive",
@@ -188,9 +188,9 @@ dependencies = [
 
 [[package]]
 name = "rust-spec-derive"
-version = "0.3.1"
+version = "0.5.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "800dc6ef82004dfe958fb1fd2d16e48b13fd04e3a095703e3c01d09e10fa3809"
+checksum = "0910ab62daf3d5a93434ffb572261e39a011c17e8f6b55bfe37e2e7fa7d2a04d"
 dependencies = [
  "proc-macro-crate",
  "proc-macro2",
