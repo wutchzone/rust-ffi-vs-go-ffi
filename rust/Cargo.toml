@@ -5,7 +5,7 @@ authors = ["Daniel Sedlak <daniel@sedlak.biz>"]
 edition = "2018"
 
 [dependencies]
-libc = "*"
+co3 = "0.7.1"
 
 [build-dependencies]
 cc = "*"
