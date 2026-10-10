@@ -2,15 +2,15 @@
 #include <libavformat/avformat.h>
 #include <libavutil/timestamp.h>
 
-int rust_transmuxer(callback read, callback write) {
+int rust_transmuxer(void *context, read_callback read, write_callback write) {
   unsigned char *buffer = av_malloc(8192);
   unsigned char *o_buf = av_malloc(2 * 8192);
   // used for input file
   AVIOContext *io_context =
-      avio_alloc_context(buffer, 8192, 0, NULL, read, NULL, NULL);
+      avio_alloc_context(buffer, 8192, 0, context, read, NULL, NULL);
   // used for ouput file
   AVIOContext *ioo_context =
-      avio_alloc_context(o_buf, 2 * 8192, 1, NULL, NULL, write, NULL);
+      avio_alloc_context(o_buf, 2 * 8192, 1, context, NULL, write, NULL);
 
   int ret, i;
   AVFormatContext *f_context = avformat_alloc_context(),
@@ -36,7 +36,7 @@ int rust_transmuxer(callback read, callback write) {
 
   // copy codecs info
   int *streams_list =
-      av_mallocz_array(f_context->nb_streams, sizeof(*streams_list));
+      av_calloc(f_context->nb_streams, sizeof(*streams_list));
   int stream_index = 0;
   for (i = 0; (unsigned int)i < f_context->nb_streams; i++) {
     AVStream *out_stream;
